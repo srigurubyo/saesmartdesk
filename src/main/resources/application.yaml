@@ -1,0 +1,44 @@
+﻿spring:
+  application:
+    name: smartdesk
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:smartdesk}
+    username: ${DB_USERNAME:smartdesk}
+    password: ${DB_PASSWORD:smartdesk}
+  jpa:
+    open-in-view: false
+    hibernate:
+      ddl-auto: validate
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc.time_zone: UTC
+    show-sql: false
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+
+sae:
+  security:
+    jwt:
+      issuer: smartdesk
+      secret: ${JWT_SECRET:change-me}
+      access-token-validity-seconds: 900
+    totp:
+      issuer: SmartDesk
+      digits: 6
+      period: 30
+      window: 1
+  scheduler:
+    sla-delay-millis: 60000
+    notification-delay-millis: 30000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info,metrics
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
