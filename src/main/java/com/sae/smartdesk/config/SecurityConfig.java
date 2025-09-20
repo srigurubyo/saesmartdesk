@@ -3,6 +3,8 @@ package com.sae.smartdesk.config;
 import com.sae.smartdesk.auth.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.Profiles;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -24,22 +26,33 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(
         HttpSecurity http,
         JwtAuthenticationFilter jwtAuthenticationFilter,
-        DaoAuthenticationProvider daoAuthenticationProvider
+        DaoAuthenticationProvider daoAuthenticationProvider,
+        Environment environment
     ) throws Exception {
+        boolean devProfile = environment.acceptsProfiles(Profiles.of("dev"));
+
         http
             .cors().and()
             .csrf().disable()
             .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS)
             .and()
-            .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/auth/**").permitAll()
-                .requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll()
-                .requestMatchers(HttpMethod.POST, "/requests/*/feedback").authenticated()
-                .requestMatchers("/actuator/health").permitAll()
-                .anyRequest().authenticated()
-            )
+            .authorizeHttpRequests(authorize -> {
+                authorize.requestMatchers("/auth/**").permitAll();
+                authorize.requestMatchers("/v3/api-docs/**", "/swagger-ui/**", "/swagger-ui.html").permitAll();
+                authorize.requestMatchers(HttpMethod.POST, "/requests/*/feedback").authenticated();
+                authorize.requestMatchers("/actuator/health").permitAll();
+                if (devProfile) {
+                    authorize.requestMatchers("/h2-console/**").permitAll();
+                }
+                authorize.anyRequest().authenticated();
+            })
             .authenticationProvider(daoAuthenticationProvider)
             .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
+        if (devProfile) {
+            http.headers().frameOptions().disable();
+        }
+
         return http.build();
     }
 
@@ -66,3 +79,4 @@ public class SecurityConfig {
         return authenticationConfiguration.getAuthenticationManager();
     }
 }
+
