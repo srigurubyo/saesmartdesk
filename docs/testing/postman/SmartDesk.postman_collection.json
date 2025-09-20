@@ -1,0 +1,127 @@
+{
+  "info": {
+    "name": "SmartDesk API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth - Login",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"username\": \"requestor1\",\n  \"password\": \"password\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/auth/login",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "auth",
+            "login"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Hall Booking - Create",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"hallId\": \"33333333-3333-3333-3333-333333333333\",\n  \"startDatetime\": \"2025-10-05T09:00:00Z\",\n  \"endDatetime\": \"2025-10-05T11:00:00Z\",\n  \"layout\": \"U-SHAPE\",\n  \"participantCount\": 24,\n  \"equipmentList\": \"LED wall, wireless microphones\",\n  \"purpose\": \"Product design review\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/hall-bookings",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "hall-bookings"
+          ]
+        }
+      }
+    },
+    {
+      "name": "Requests - Mine",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/requests?mine=true",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests"
+          ],
+          "query": [
+            {
+              "key": "mine",
+              "value": "true"
+            }
+          ]
+        }
+      }
+    },
+    {
+      "name": "Requests - Approve",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          },
+          {
+            "key": "Authorization",
+            "value": "Bearer {{accessToken}}"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"comment\": \"Reviewed and approved.\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/requests/{{requestId}}/approve",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "requests",
+            "{{requestId}}",
+            "approve"
+          ]
+        }
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "requestId",
+      "value": "aa111111-2222-3333-4444-555555555555"
+    }
+  ]
+}

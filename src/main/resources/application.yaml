@@ -59,6 +59,10 @@ spring:
         dialect: org.hibernate.dialect.PostgreSQLDialect
   flyway:
     default-schema: PUBLIC
+    locations: classpath:db/migration,classpath:db/dev
+sae:
+  security:
+    disable-mfa: true
 
 ---
 spring:

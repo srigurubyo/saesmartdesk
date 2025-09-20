@@ -69,6 +69,10 @@ public class AuthService {
             throw new ForbiddenException("Account disabled");
         }
         Set<String> roles = user.getRoles().stream().map(role -> role.getName()).collect(Collectors.toSet());
+        if (securityProperties.isDisableMfa()) {
+            JwtTokenService.TokenWithExpiry tokenWithExpiry = jwtTokenService.generateAccessToken(user);
+            return new LoginResponse(true, false, false, tokenWithExpiry.token(), tokenWithExpiry.expiresAt(), null, roles);
+        }
         if (user.getMfaTotpSecret() == null || user.getMfaTotpSecret().isBlank()) {
             JwtTokenService.TokenWithExpiry tokenWithExpiry = jwtTokenService.generateAccessToken(user);
             return new LoginResponse(true, false, true, tokenWithExpiry.token(), tokenWithExpiry.expiresAt(), null, roles);
@@ -90,6 +94,9 @@ public class AuthService {
     }
 
     public LoginResponse challenge(MfaChallengeRequest request) {
+        if (securityProperties.isDisableMfa()) {
+            throw new BadRequestException("MFA is disabled in this environment");
+        }
         MfaEnrollmentCache.Session session = mfaEnrollmentCache.get(request.mfaToken())
             .orElseThrow(() -> new BadRequestException("Invalid or expired MFA token"));
         User user = userService.getById(session.userId());

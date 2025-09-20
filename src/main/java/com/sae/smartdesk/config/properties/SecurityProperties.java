@@ -7,8 +7,17 @@ import org.springframework.stereotype.Component;
 @ConfigurationProperties(prefix = "sae.security")
 public class SecurityProperties {
 
+    private boolean disableMfa;
     private final Jwt jwt = new Jwt();
     private final Totp totp = new Totp();
+
+    public boolean isDisableMfa() {
+        return disableMfa;
+    }
+
+    public void setDisableMfa(boolean disableMfa) {
+        this.disableMfa = disableMfa;
+    }
 
     public Jwt getJwt() {
         return jwt;
@@ -83,7 +92,7 @@ public class SecurityProperties {
         }
 
         public void setWindow(int window) {
-                this.window = window;
+            this.window = window;
         }
     }
 }
