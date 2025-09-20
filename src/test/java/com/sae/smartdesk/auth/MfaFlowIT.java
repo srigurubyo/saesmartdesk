@@ -10,6 +10,7 @@ import com.sae.smartdesk.auth.repository.UserRepository;
 import com.sae.smartdesk.auth.service.AuthService;
 import com.sae.smartdesk.config.properties.SecurityProperties;
 import dev.samstevens.totp.code.CodeGenerator;
+import dev.samstevens.totp.exceptions.CodeGenerationException;
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
@@ -41,7 +42,12 @@ class MfaFlowIT extends AbstractIntegrationTest {
         Assertions.assertNotNull(enrollResponse.mfaToken());
 
         long timeWindow = Instant.now().getEpochSecond() / securityProperties.getTotp().getPeriod();
-        String code = codeGenerator.generate(enrollResponse.secret(), timeWindow);
+        String code;
+        try {
+            code = codeGenerator.generate(enrollResponse.secret(), timeWindow);
+        } catch (CodeGenerationException e) {
+            throw new IllegalStateException("Unable to generate TOTP for test", e);
+        }
 
         LoginResponse finalResponse = authService.challenge(new MfaChallengeRequest(enrollResponse.mfaToken(), code));
         Assertions.assertNotNull(finalResponse.accessToken());

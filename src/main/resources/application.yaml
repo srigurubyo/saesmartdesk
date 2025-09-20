@@ -1,10 +1,6 @@
-﻿spring:
+spring:
   application:
     name: smartdesk
-  datasource:
-    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:smartdesk}
-    username: ${DB_USERNAME:smartdesk}
-    password: ${DB_PASSWORD:smartdesk}
   jpa:
     open-in-view: false
     hibernate:
@@ -42,3 +38,36 @@ management:
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
+
+---
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:h2:mem:smartdesk;MODE=PostgreSQL;DB_CLOSE_DELAY=-1
+    driver-class-name: org.h2.Driver
+    username: sa
+    password:
+  h2:
+    console:
+      enabled: true
+      path: /h2-console
+  jpa:
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  flyway:
+    default-schema: PUBLIC
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:smartdesk}
+    username: ${DB_USERNAME:smartdesk}
+    password: ${DB_PASSWORD:smartdesk}
+
+

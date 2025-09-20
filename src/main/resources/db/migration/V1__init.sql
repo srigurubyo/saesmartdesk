@@ -1,5 +1,5 @@
-﻿CREATE TABLE roles (
-    id SERIAL PRIMARY KEY,
+CREATE TABLE roles (
+    id BIGSERIAL PRIMARY KEY,
     name VARCHAR(60) NOT NULL UNIQUE
 );
 
@@ -11,13 +11,13 @@ CREATE TABLE users (
     full_name VARCHAR(160) NOT NULL,
     enabled BOOLEAN NOT NULL DEFAULT TRUE,
     mfa_totp_secret VARCHAR(120),
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE user_roles (
     user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    role_id INT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
+    role_id BIGINT NOT NULL REFERENCES roles(id) ON DELETE CASCADE,
     PRIMARY KEY (user_id, role_id)
 );
 
@@ -26,8 +26,8 @@ CREATE TABLE approval_workflows (
     request_type VARCHAR(60) NOT NULL,
     version INT NOT NULL,
     active BOOLEAN NOT NULL DEFAULT FALSE,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    updated_at TIMESTAMPTZ
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    updated_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE approval_steps (
@@ -48,11 +48,11 @@ CREATE TABLE requests (
     status VARCHAR(30) NOT NULL,
     workflow_id UUID NOT NULL REFERENCES approval_workflows(id),
     priority VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
-    submitted_at TIMESTAMPTZ,
-    updated_at TIMESTAMPTZ,
-    due_at TIMESTAMPTZ,
-    closed_at TIMESTAMPTZ,
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    submitted_at TIMESTAMP WITH TIME ZONE,
+    updated_at TIMESTAMP WITH TIME ZONE,
+    due_at TIMESTAMP WITH TIME ZONE,
+    closed_at TIMESTAMP WITH TIME ZONE,
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
 CREATE INDEX idx_requests_request_type ON requests(request_type);
@@ -66,7 +66,7 @@ CREATE TABLE request_approvals (
     approver_id UUID REFERENCES users(id),
     decision VARCHAR(20),
     comment VARCHAR(2000),
-    decided_at TIMESTAMPTZ,
+    decided_at TIMESTAMP WITH TIME ZONE,
     UNIQUE(request_id, step_order)
 );
 
@@ -78,7 +78,7 @@ CREATE TABLE audit_log (
     action VARCHAR(80) NOT NULL,
     entity_type VARCHAR(60) NOT NULL,
     entity_id UUID NOT NULL,
-    at TIMESTAMPTZ NOT NULL DEFAULT now(),
+    at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     details VARCHAR(4000)
 );
 
@@ -89,8 +89,8 @@ CREATE TABLE notifications (
     template_key VARCHAR(80) NOT NULL,
     payload VARCHAR(4000),
     status VARCHAR(20) NOT NULL DEFAULT 'PENDING',
-    created_at TIMESTAMPTZ NOT NULL DEFAULT now(),
-    sent_at TIMESTAMPTZ
+    created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
+    sent_at TIMESTAMP WITH TIME ZONE
 );
 
 CREATE TABLE halls (
@@ -103,8 +103,8 @@ CREATE TABLE halls (
 CREATE TABLE hall_bookings (
     id UUID PRIMARY KEY,
     hall_id UUID NOT NULL REFERENCES halls(id),
-    start_datetime TIMESTAMPTZ NOT NULL,
-    end_datetime TIMESTAMPTZ NOT NULL,
+    start_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
+    end_datetime TIMESTAMP WITH TIME ZONE NOT NULL,
     layout VARCHAR(120),
     participant_count INT NOT NULL,
     equipment_list TEXT,
@@ -118,7 +118,7 @@ CREATE TABLE defect_reports (
     severity VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
     description VARCHAR(2000) NOT NULL,
     photo_urls TEXT,
-    reported_at TIMESTAMPTZ NOT NULL DEFAULT now()
+    reported_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 );
 
 INSERT INTO roles (name) VALUES ('REQUESTOR'), ('HOD'), ('ADMIN'), ('UNIT_OFFICER');
@@ -156,3 +156,4 @@ VALUES
     ('11111111-1111-1111-1111-111111111113', '11111111-1111-1111-1111-111111111111', 2, 'ADMIN', 24),
     ('22222222-2222-2222-2222-222222222223', '22222222-2222-2222-2222-222222222222', 1, 'HOD', 24),
     ('22222222-2222-2222-2222-222222222224', '22222222-2222-2222-2222-222222222222', 2, 'UNIT_OFFICER', 24);
+
