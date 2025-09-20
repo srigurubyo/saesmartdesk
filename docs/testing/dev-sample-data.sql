@@ -26,6 +26,11 @@ DELETE FROM halls WHERE id IN (
     '55555555-5555-5555-5555-555555555552'
 );
 
+-- Reset user passwords for convenience
+UPDATE users
+SET password_hash = '$2a$10$KplBrhiDLCRmt.IaazBIuOgwn1B8kislrt9PFpjMnhTjKa0Kw3QYO', mfa_totp_secret = NULL
+WHERE username IN ('requestor1','requestor2','hod1','hod2','admin1','admin2','unit1','unit2');
+
 -- Enrich reference data -----------------------------------------------------
 INSERT INTO halls (id, name, location, capacity)
 VALUES

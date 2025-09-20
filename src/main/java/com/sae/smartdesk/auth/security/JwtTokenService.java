@@ -48,23 +48,23 @@ public class JwtTokenService {
         return new TokenWithExpiry(token, expiry);
     }
 
-    public Optional<JwtPayload> parseToken(String token) {
-        try {
-            Claims claims = Jwts.parserBuilder()
-                .setSigningKey(signingKey)
-                .build()
-                .parseClaimsJws(token)
-                .getBody();
-            UUID userId = UUID.fromString(claims.getSubject());
-            String username = claims.get("username", String.class);
-            Set<String> roles = extractRoles(claims.get("roles"));
-            Instant expiresAt = claims.getExpiration().toInstant();
-            return Optional.of(new JwtPayload(userId, username, roles, expiresAt));
-        } catch (Exception ex) {
-            return Optional.empty();
-        }
-    }
-
+    public Optional<JwtPayload> parseToken(String token) {
+        try {
+            Claims claims = Jwts.parser()
+                .setSigningKey(signingKey)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+            UUID userId = UUID.fromString(claims.getSubject());
+            String username = claims.get("username", String.class);
+            Set<String> roles = extractRoles(claims.get("roles"));
+            Instant expiresAt = claims.getExpiration().toInstant();
+            return Optional.of(new JwtPayload(userId, username, roles, expiresAt));
+        } catch (Exception ex) {
+            return Optional.empty();
+        }
+    }
+
     private Key buildKey(String secret) {
         if (secret == null || secret.length() < 32) {
             byte[] keyBytes = secret == null ? new byte[0] : secret.getBytes(StandardCharsets.UTF_8);

@@ -26,6 +26,11 @@ DELETE FROM halls WHERE id IN (
     '55555555-5555-5555-5555-555555555552'
 );
 
+-- Reset user passwords for convenience
+UPDATE users
+SET password_hash = '$2a$10$KplBrhiDLCRmt.IaazBIuOgwn1B8kislrt9PFpjMnhTjKa0Kw3QYO', mfa_totp_secret = NULL
+WHERE username IN ('requestor1','requestor2','hod1','hod2','admin1','admin2','unit1','unit2');
+
 -- Enrich reference data -----------------------------------------------------
 INSERT INTO halls (id, name, location, capacity)
 VALUES
@@ -69,4 +74,3 @@ INSERT INTO audit_log (id, actor_id, action, entity_type, entity_id, at, details
 VALUES
     ('77777777-8888-4999-aaaa-bbbbbbbbbbbb', '00000000-0000-0000-0000-000000000003', 'REQUEST_APPROVE', 'REQUEST', 'aa111111-2222-3333-4444-555555555555', TIMESTAMP '2025-09-20 08:11:00+00', 'step=1'),
     ('88888888-9999-4aaa-bbbb-cccccccccccc', '00000000-0000-0000-0000-000000000007', 'REQUEST_REJECT', 'REQUEST', 'cc111111-2222-3333-4444-777777777777', TIMESTAMP '2025-09-18 09:36:00+00', 'step=2');
-
